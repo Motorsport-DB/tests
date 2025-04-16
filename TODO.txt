@@ -1,0 +1,11 @@
+default/clone-repo-motorsportdb:                OK
+default/deploy-docker-motorsportdb:             OK
+default/verify-availability-motorsportdb:       OK
+
+multi/check-errors-motorsportdb:                OK
+multi/link-motorsportdb:                        OK
+multi/unused-picture-motorsportdb:              OK
+multi/verify-date-motorsportdb:                 OK
+multi/verify-key-motorsportdb                   OK
+
+single/search-motorsportdb                      NOT AVAILABLE
