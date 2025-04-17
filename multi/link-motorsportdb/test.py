@@ -62,7 +62,7 @@ def access_data():
         url = f"{URL}/getRaces.php?id={race}&year={year}"
         isValid = test_access(url)
         if (isValid):
-            races_valid.append(race)
+            races_valid.append((race, year))
         else:
             errors.append(f"[LINK-MOTORSPORTDB - ACCESS] - (race) Can't access to {url}")
     
@@ -84,11 +84,12 @@ def verify_broken_link():
             errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({teams[i]}) Broken link in {url} at {broken_link}")
     
     for i in range(len(races)):
+        race, year = races[i]
         print("["+str(i)+"/"+str(len(races))+"]" + "Testing: "+ str(races[i]))
-        url = f"{URL}/race.html?id={races[i][0]}&year={races[i][1]}"
+        url = f"{URL}/race.html?id={race}&year={year}"
         broken_links = test_links(URL, url)
         for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({races[i][0]},{races[i][1]}) Broken link in {url} at {broken_link}")
+            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({race},{year}) Broken link in {url} at {broken_link}")
         
 print("FIRST - TEST")
 drivers, teams, races = access_data()
