@@ -30,10 +30,12 @@ for championship in os.listdir(races_path):
                 
 total_drivers = len(drivers)
 total_teams = len(teams)
+total_races = len(races)
 
 def access_data():
     drivers_valid = []
     teams_valid = []
+    races_valid = []
     for driver in drivers:
         if (driver == ""):
             continue
@@ -60,11 +62,11 @@ def access_data():
         url = f"{URL}/getRaces.php?id={race}&year={year}"
         isValid = test_access(url)
         if (isValid):
-            teams_valid.append(race)
+            races_valid.append(race)
         else:
             errors.append(f"[LINK-MOTORSPORTDB - ACCESS] - (race) Can't access to {url}")
     
-    return drivers_valid, teams_valid
+    return drivers_valid, teams_valid, races_valid
 
 def verify_broken_link():
     for i in range(len(drivers)):
@@ -80,13 +82,22 @@ def verify_broken_link():
         broken_links = test_links(URL, url)
         for broken_link in broken_links:
             errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({teams[i]}) Broken link in {url} at {broken_link}")
+    
+    for i in range(len(races)):
+        print("["+str(i)+"/"+str(len(races))+"]" + "Testing: "+ str(races[i]))
+        url = f"{URL}/race.html?id={races[i][0]}&year={races[i][1]}"
+        broken_links = test_links(URL, url)
+        for broken_link in broken_links:
+            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({races[i][0]},{races[i][1]}) Broken link in {url} at {broken_link}")
         
 print("FIRST - TEST")
-drivers, teams = access_data()
+drivers, teams, races = access_data()
 first_test_total_teams = len(teams)
 first_test_total_drivers = len(drivers)
-print(str(total_teams - first_test_total_teams) + "teams not pass")
-print(str(total_drivers - first_test_total_drivers) + "drivers not pass")
+first_test_total_races = len(races)
+print(str(total_teams - first_test_total_teams) + " teams not pass")
+print(str(total_drivers - first_test_total_drivers) + " drivers not pass")
+print(str(total_races - first_test_total_races) + " teams not pass")
 print("SECOND - TEST")
 verify_broken_link()
 
