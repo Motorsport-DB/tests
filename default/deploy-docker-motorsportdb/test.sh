@@ -2,12 +2,14 @@ docker rm -f deploy-motorsportdb || true
 
 docker run -d -p 8043:80 -v /var/run/docker.sock:/var/run/docker.sock --name deploy-motorsportdb debian:bookworm bash -c "
   apt-get update && \
-  apt-get install -y apache2 php libapache2-mod-php git && \
+  apt-get install -y apache2 php libapache2-mod-php git acl && \
   mkdir -p /var/www && \
   cd /var/www && \
   rm -rf html && \
   git clone https://github.com/Motorsport-DB/website html && \
-  chgrp -R www-data html && \
+  setfacl -R -m u:www-data:rwX html && \
+  setfacl -dR -m u:www-data:rwX html && \
+  chmod -R u+rwX html && \
   cd html && \
   git clone https://github.com/Motorsport-DB/races && \
   git clone https://github.com/Motorsport-DB/teams && \
