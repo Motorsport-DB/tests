@@ -38,3 +38,4 @@ if __name__ == "__main__":
         print("✅ retrieve-cards-motorsportdb passed successfully!")
     else:
         print("❌ retrieve-cards-motorsportdb")
+        exit(1)

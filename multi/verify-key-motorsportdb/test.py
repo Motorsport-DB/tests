@@ -43,5 +43,6 @@ if __name__ == "__main__":
         print("❌ verify-key-motorsportdb")
         for r in result:
             print("-", r)
+        exit(1)
     else:
         print("✅ verify-key-motorsportdb passed successfully!")

@@ -40,5 +40,6 @@ if __name__ == "__main__":
         print("❌ verify-date-motorsportdb")
         for err in result:
             print("-", err)
+        exit(1)
     else:
         print("✅ verify-date-motorsportdb passed successfully!")
