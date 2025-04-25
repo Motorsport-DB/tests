@@ -5,7 +5,7 @@ import os
 FILE = "/cards.json"
 
 def get_url_from_config():
-    config_path = os.path.join(os.path.dirname(__file__), "../config.json")
+    config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
     try:
         with open(config_path, "r") as config_file:
             config = json.load(config_file)
