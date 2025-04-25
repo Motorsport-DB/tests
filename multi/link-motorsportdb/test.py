@@ -70,14 +70,14 @@ def access_data():
 
 def verify_broken_link():
     for i in range(len(drivers)):
-        print("["+str(i)+"/"+str(len(drivers))+"]" + "Testing: "+ str(drivers[i]))
+        print("["+str(i+1)+"/"+str(len(drivers))+"]" + "Testing: "+ str(drivers[i]))
         url = f"{URL}/driver.html?id={drivers[i]}"
         broken_links = test_links(URL, url)       
         for broken_link in broken_links:
             errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({drivers[i]}) Broken link in {url} at {broken_link}")
     
     for i in range(len(teams)):
-        print("["+str(i)+"/"+str(len(teams))+"]" + "Testing: "+ str(teams[i]))
+        print("["+str(i+1)+"/"+str(len(teams))+"]" + "Testing: "+ str(teams[i]))
         url = f"{URL}/team.html?id={teams[i]}"
         broken_links = test_links(URL, url)
         for broken_link in broken_links:
@@ -85,7 +85,7 @@ def verify_broken_link():
     
     for i in range(len(races)):
         race, year = races[i]
-        print("["+str(i)+"/"+str(len(races))+"]" + "Testing: "+ str(races[i]))
+        print("["+str(i+1)+"/"+str(len(races))+"]" + "Testing: "+ str(races[i]))
         url = f"{URL}/race.html?id={race}&year={year}"
         broken_links = test_links(URL, url)
         for broken_link in broken_links:

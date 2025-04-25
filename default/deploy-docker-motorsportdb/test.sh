@@ -7,6 +7,7 @@ docker run -d -p 8043:80 -v /var/run/docker.sock:/var/run/docker.sock --name dep
   cd /var/www && \
   rm -rf html && \
   git clone https://github.com/Motorsport-DB/website html && \
+  chgrp -R www-data html && \
   cd html && \
   git clone https://github.com/Motorsport-DB/races && \
   git clone https://github.com/Motorsport-DB/teams && \

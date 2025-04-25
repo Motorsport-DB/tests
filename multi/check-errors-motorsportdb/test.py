@@ -34,7 +34,7 @@ total_races = len(races_files)
 
 def verify_errors_console():
     for i in range(len(drivers)):
-        print("["+str(i)+"/"+str(len(drivers))+"] " + "Testing: "+ str(drivers[i]))
+        print("["+str(i+1)+"/"+str(len(drivers))+"] " + "Testing: "+ str(drivers[i]))
         url = f"{URL}/driver.html?id={drivers[i]}"
         errors_console, warnings_console = check_console_errors(url)       
         for error_console in errors_console:
@@ -43,7 +43,7 @@ def verify_errors_console():
             print(f"[⚠️] - " + warning_console)
     
     for i in range(len(teams)):
-        print("["+str(i)+"/"+str(len(teams))+"] " + "Testing: "+ str(teams[i]))
+        print("["+str(i+1)+"/"+str(len(teams))+"] " + "Testing: "+ str(teams[i]))
         url = f"{URL}/team.html?id={teams[i]}"
         errors_console, warnings_console = check_console_errors(url)
         for error_console in errors_console:
@@ -53,7 +53,7 @@ def verify_errors_console():
 
     for i in range(len(races_files)):
         championship, year = races_files[i]
-        print(f"[{i}/{len(races_files)}] Testing: Championship={championship}, Year={year}")
+        print(f"[{i+1}/{len(races_files)}] Testing: Championship={championship}, Year={year}")
         url = f"{URL}/race.html?id={championship}&year={year}"
         errors_console, warnings_console = check_console_errors(url)
         for error_console in errors_console:
