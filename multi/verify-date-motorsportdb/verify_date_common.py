@@ -3,6 +3,10 @@ import json
 from datetime import datetime
 
 def is_valid_date(value):
+    # If the value is a list, check each element
+    if isinstance(value, list):
+        return all(is_valid_date(item) for item in value)
+
     # YYYY
     if isinstance(value, str):
         if re.fullmatch(r"\d{4}", value):
@@ -18,7 +22,7 @@ def is_valid_date(value):
                 datetime.strptime(value, "%Y-%m-%d")
                 return True
             except ValueError:
-                return False 
+                return False
 
     return False
 
