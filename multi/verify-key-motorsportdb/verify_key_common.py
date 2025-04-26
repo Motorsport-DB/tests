@@ -43,9 +43,12 @@ def validate_json_file(file_path, REQUIRED_KEYS, VALID_KEYS):
 
     with open(file_path, "r", encoding="utf-8") as f:
         try:
-            data = json.load(f)
+            # Use a custom JSON decoder to detect duplicate keys
+            data = json.load(f, object_pairs_hook=check_duplicate_keys)
         except json.JSONDecodeError as e:
             return [f"[JSON_ERROR] {file_path}: {e}"]
+        except ValueError as e:  # Catch duplicate key errors
+            return [f"[DUPLICATE_KEY_ERROR] {file_path}: {e}"]
 
     keys = set(data.keys())
 
@@ -59,9 +62,19 @@ def validate_json_file(file_path, REQUIRED_KEYS, VALID_KEYS):
     unknown_keys = keys - VALID_KEYS
     if unknown_keys:
         for k in unknown_keys:
-            errors.append(f"[UNKNOWN] {file_path}: Uknown key '{k}' detected")
+            errors.append(f"[UNKNOWN] {file_path}: Unknown key '{k}' detected")
 
     return errors
+
+
+def check_duplicate_keys(pairs):
+    """Helper function to detect duplicate keys in JSON."""
+    seen_keys = set()
+    for key, value in pairs:
+        if key in seen_keys:
+            raise ValueError(f"Duplicate key '{key}' found")
+        seen_keys.add(key)
+    return dict(pairs)
 
 def validate_drivers(drivers_json_path):
     return validate_json_file(drivers_json_path, REQUIRED_KEYS_DRIVERS, VALID_KEYS_DRIVERS)

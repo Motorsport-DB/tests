@@ -1,12 +1,22 @@
 import os
 from verify_key_common import validate_drivers, validate_teams, validate_races
+import json
 
 def scan_json_folder():
     all_errors = []
     
-    drivers_folder = os.path.expanduser("~/clone-motorsportdb/drivers")
-    teams_folder = os.path.expanduser("~/clone-motorsportdb/teams")
-    races_folder = os.path.expanduser("~/clone-motorsportdb/races")
+    config_path = os.path.abspath("../../config.json")
+    with open(config_path, "r") as config_file:
+        config_data = json.load(config_file)
+
+    linux_url_local_files = config_data.get("LINUX_URL_LOCAL_FILES")
+    if not linux_url_local_files:
+        raise ValueError("LINUX_URL_LOCAL_FILES key is missing in the configuration file.")
+    
+    BASE_URL = config_data.get("LINUX_URL_LOCAL_FILES")
+    drivers_folder = os.path.expanduser(BASE_URL + "/drivers")
+    teams_folder = os.path.expanduser(BASE_URL + "/teams")
+    races_folder = os.path.expanduser(BASE_URL + "/races")
     
     drivers_files = [
         os.path.join(drivers_folder, f) for f in os.listdir(drivers_folder)
