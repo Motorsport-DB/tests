@@ -5,7 +5,7 @@ import json
 def scan_json_folder():
     all_errors = []
     
-    config_path = os.path.abspath("../../config.json")
+    config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
     with open(config_path, "r") as config_file:
         config_data = json.load(config_file)
 
