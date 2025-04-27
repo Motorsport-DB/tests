@@ -6,7 +6,7 @@ docker run -d -p 8043:80 -v /var/run/docker.sock:/var/run/docker.sock --name dep
   mkdir -p /var/www && \
   cd /var/www && \
   rm -rf html && \
-  git clone https://github.com/Motorsport-DB/website html && \
+  git clone -b in-dev https://github.com/Motorsport-DB/website html && \
   setfacl -R -m u:www-data:rwX html && \
   setfacl -dR -m u:www-data:rwX html && \
   chmod -R u+rwX html && \
