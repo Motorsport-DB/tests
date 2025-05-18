@@ -74,14 +74,14 @@ def verify_broken_link():
         url = f"{URL}/driver.html?id={drivers[i]}"
         broken_links = test_links(URL, url)       
         for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({drivers[i]}) Broken link in {url} at {broken_link}")
+            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({drivers[i]}) {url} for {broken_link}")
     
     for i in range(len(teams)):
         print("["+str(i+1)+"/"+str(len(teams))+"]" + "Testing: "+ str(teams[i]))
         url = f"{URL}/team.html?id={teams[i]}"
         broken_links = test_links(URL, url)
         for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({teams[i]}) Broken link in {url} at {broken_link}")
+            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({teams[i]}) {url} for {broken_link}")
     
     for i in range(len(races)):
         race, year = races[i]
@@ -89,7 +89,7 @@ def verify_broken_link():
         url = f"{URL}/race.html?id={race}&year={year}"
         broken_links = test_links(URL, url)
         for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({race},{year}) Broken link in {url} at {broken_link}")
+            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({race},{year}) {url} for {broken_link}")
         
 print("FIRST - TEST")
 drivers, teams, races = access_data()
@@ -98,7 +98,7 @@ first_test_total_drivers = len(drivers)
 first_test_total_races = len(races)
 print(str(total_teams - first_test_total_teams) + " teams not pass")
 print(str(total_drivers - first_test_total_drivers) + " drivers not pass")
-print(str(total_races - first_test_total_races) + " teams not pass")
+print(str(total_races - first_test_total_races) + " races not pass")
 print("SECOND - TEST")
 verify_broken_link()
 
