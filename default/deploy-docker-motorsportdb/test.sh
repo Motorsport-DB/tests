@@ -1,7 +1,7 @@
 #!/bin/bash
 docker rm -f deploy-motorsportdb 2>/dev/null || true
 
-docker run -d -p 8043:80 --name deploy-motorsportdb debian:bookworm bash -c "
+docker run -d -p 8043:80 --name deploy-motorsportdb --network host debian:bookworm bash -c "
   set -eux;
 
   apt-get clean;
