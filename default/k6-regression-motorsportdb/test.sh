@@ -22,7 +22,7 @@ export let options = {
     },
 };
 
-const BASE_URL = 'http://localhost:80';
+const BASE_URL = 'http://localhost:8043';
 
 export default function () {
     const pages = [
