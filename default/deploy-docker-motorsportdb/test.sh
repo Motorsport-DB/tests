@@ -1,7 +1,7 @@
 #!/bin/bash
 docker rm -f deploy-motorsportdb 2>/dev/null || true
 
-docker run -d -p 8043:80 --name deploy-motorsportdb --network host debian:bookworm bash -c "
+docker run -d --name deploy-motorsportdb --network host debian:bookworm bash -c "
   set -eux;
 
   apt-get clean;
@@ -31,6 +31,10 @@ docker run -d -p 8043:80 --name deploy-motorsportdb --network host debian:bookwo
 
   echo 'ServerName localhost' >> /etc/apache2/apache2.conf;
 
+  # Modifier Apache pour écouter sur le port 8043 au lieu de 80
+  sed -i 's/Listen 80/Listen 8043/' /etc/apache2/ports.conf
+  sed -i 's/<VirtualHost \*:80>/<VirtualHost *:8043>/' /etc/apache2/sites-available/000-default.conf
+
   apt-get update;
   apt-get install -y wget;
   wget -q https://github.com/grafana/k6/releases/download/v0.48.0/k6-v0.48.0-linux-amd64.deb;
@@ -39,7 +43,6 @@ docker run -d -p 8043:80 --name deploy-motorsportdb --network host debian:bookwo
   apache2ctl -D FOREGROUND
 "
 
-# Optionnel: attendre qu'apache tourne (environ 10-20 sec max)
 echo "⏳ Attente que apache démarre dans le container..."
 until docker exec deploy-motorsportdb pgrep apache2 > /dev/null 2>&1; do
   sleep 2
