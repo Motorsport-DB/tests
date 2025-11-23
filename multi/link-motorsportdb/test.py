@@ -1,20 +1,27 @@
-from link_common import test_access, test_links  
+from link_common import test_access, test_links_batch
 import os
+import json
 
-URL = "http://192.168.1.33:8043"
+# Load config
+config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
+with open(config_path, "r") as f:
+    config = json.load(f)
+
+URL = config.get("URL_LOCAL_TEST", "http://192.168.1.33:8043")
+BASE_PATH = os.path.expanduser(config.get("LINUX_URL_LOCAL_FILES", "~/clone-motorsportdb"))
 
 errors = []
 
 # Get all drivers and teams
 drivers_files = [
-    f for f in os.listdir(os.path.expanduser("~/clone-motorsportdb/drivers"))
+    f for f in os.listdir(os.path.join(BASE_PATH, "drivers"))
     if f.endswith(".json")
 ]
 teams_files = [
-    f for f in os.listdir(os.path.expanduser("~/clone-motorsportdb/teams"))
+    f for f in os.listdir(os.path.join(BASE_PATH, "teams"))
     if f.endswith(".json")
 ]
-races_path = os.path.expanduser("~/clone-motorsportdb/races")
+races_path = os.path.join(BASE_PATH, "races")
 drivers = [f.split('/')[-1].strip().replace(".json","") for f in drivers_files]
 teams = [f.split('/')[-1].strip().replace(".json","") for f in teams_files]
 
@@ -69,27 +76,40 @@ def access_data():
     return drivers_valid, teams_valid, races_valid
 
 def verify_broken_link():
-    for i in range(len(drivers)):
-        print("["+str(i+1)+"/"+str(len(drivers))+"]" + "Testing: "+ str(drivers[i]))
-        url = f"{URL}/driver.html?id={drivers[i]}"
-        broken_links = test_links(URL, url)       
-        for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({drivers[i]}) {url} for {broken_link}")
+    # Préparer toutes les URLs pour traitement par batch
+    all_urls = []
     
-    for i in range(len(teams)):
-        print("["+str(i+1)+"/"+str(len(teams))+"]" + "Testing: "+ str(teams[i]))
-        url = f"{URL}/team.html?id={teams[i]}"
-        broken_links = test_links(URL, url)
-        for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({teams[i]}) {url} for {broken_link}")
+    for driver in drivers:
+        url = f"{URL}/driver.html?id={driver}"
+        all_urls.append((url, "driver", driver))
     
-    for i in range(len(races)):
-        race, year = races[i]
-        print("["+str(i+1)+"/"+str(len(races))+"]" + "Testing: "+ str(races[i]))
+    for team in teams:
+        url = f"{URL}/team.html?id={team}"
+        all_urls.append((url, "team", team))
+    
+    for race, year in races:
         url = f"{URL}/race.html?id={race}&year={year}"
-        broken_links = test_links(URL, url)
+        all_urls.append((url, "race", f"{race}/{year}"))
+    
+    print(f"Testing {len(all_urls)} pages for broken links in parallel...")
+    
+    # Traiter toutes les URLs en parallèle
+    results = test_links_batch(URL, all_urls)
+    
+    # Regrouper les erreurs par lien cassé
+    broken_links_dict = {}
+    for url, page_type, identifier, broken_links in results:
         for broken_link in broken_links:
-            errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - ({race},{year}) {url} for {broken_link}")
+            if broken_link not in broken_links_dict:
+                broken_links_dict[broken_link] = []
+            broken_links_dict[broken_link].append(f"{page_type}: {identifier}")
+    
+    # Ajouter les erreurs regroupées
+    for broken_link, sources in broken_links_dict.items():
+        sources_str = ", ".join(sources[:5])  # Limite à 5 sources pour la lisibilité
+        if len(sources) > 5:
+            sources_str += f" ... and {len(sources) - 5} more"
+        errors.append(f"[LINK-MOTORSPORTDB - BROKEN LINK] - {broken_link} (found in: {sources_str})")
         
 print("FIRST - TEST")
 drivers, teams, races = access_data()

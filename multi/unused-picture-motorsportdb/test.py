@@ -1,13 +1,21 @@
 import os
+import json
 from unused_picture_common import check_unused_picture, check_unused_picture_directory
 
+# Load config
+config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
+with open(config_path, "r") as f:
+    config = json.load(f)
+
+BASE_PATH = os.path.expanduser(config.get("LINUX_URL_LOCAL_FILES", "~/clone-motorsportdb"))
+
 def test_unattached_driver_images():
-    drivers_images_dir = os.path.expanduser("~/clone-motorsportdb/drivers/picture")
-    drivers_dir = os.path.expanduser("~/clone-motorsportdb/drivers")
-    teams_images_dir = os.path.expanduser("~/clone-motorsportdb/teams/picture")
-    teams_dir = os.path.expanduser("~/clone-motorsportdb/teams")
-    races_images_dir = os.path.expanduser("~/clone-motorsportdb/races/picture")
-    races_dir = os.path.expanduser("~/clone-motorsportdb/races")
+    drivers_images_dir = os.path.join(BASE_PATH, "drivers", "picture")
+    drivers_dir = os.path.join(BASE_PATH, "drivers")
+    teams_images_dir = os.path.join(BASE_PATH, "teams", "picture")
+    teams_dir = os.path.join(BASE_PATH, "teams")
+    races_images_dir = os.path.join(BASE_PATH, "races", "picture")
+    races_dir = os.path.join(BASE_PATH, "races")
 
     try:
         drivers_images = [

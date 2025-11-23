@@ -1,21 +1,28 @@
-from check_errors_commons import check_console_errors
+from check_errors_commons import check_console_errors_batch
 import os
+import json
 
-URL = "http://192.168.1.33:8043"
+# Load config
+config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
+with open(config_path, "r") as f:
+    config = json.load(f)
+
+URL = config.get("URL_LOCAL_TEST", "http://192.168.1.33:8043")
+BASE_PATH = os.path.expanduser(config.get("LINUX_URL_LOCAL_FILES", "~/clone-motorsportdb"))
 
 errors = []
 
 # Get all drivers and teams
 drivers_files = [
-    f for f in os.listdir(os.path.expanduser("~/clone-motorsportdb/drivers"))
+    f for f in os.listdir(os.path.join(BASE_PATH, "drivers"))
     if f.endswith(".json")
 ]
 teams_files = [
-    f for f in os.listdir(os.path.expanduser("~/clone-motorsportdb/teams"))
+    f for f in os.listdir(os.path.join(BASE_PATH, "teams"))
     if f.endswith(".json")
 ]
 races_files = []
-races_path = os.path.expanduser("~/clone-motorsportdb/races")
+races_path = os.path.join(BASE_PATH, "races")
 
 for championship in os.listdir(races_path):
     championship_path = os.path.join(races_path, championship)
@@ -33,31 +40,36 @@ total_teams = len(teams)
 total_races = len(races_files)
 
 def verify_errors_console():
-    for i in range(len(drivers)):
-        print("["+str(i+1)+"/"+str(len(drivers))+"] " + "Testing: "+ str(drivers[i]))
-        url = f"{URL}/driver.html?id={drivers[i]}"
-        errors_console, warnings_console = check_console_errors(url)       
-        for error_console in errors_console:
-            errors.append(f"[CHECK-ERRORS-MOTORSPORTDB - BROKEN LINK] - ({drivers[i]}) errors in {url} = {error_console}")
-        for warning_console in warnings_console:
-            print(f"[⚠️] - " + warning_console)
+    # Prepare all URLs for batch processing
+    all_urls = []
     
-    for i in range(len(teams)):
-        print("["+str(i+1)+"/"+str(len(teams))+"] " + "Testing: "+ str(teams[i]))
-        url = f"{URL}/team.html?id={teams[i]}"
-        errors_console, warnings_console = check_console_errors(url)
-        for error_console in errors_console:
-            errors.append(f"[CHECK-ERRORS-MOTORSPORTDB - BROKEN LINK] - ({teams[i]}) errors in {url} = {error_console}")
-        for warning_console in warnings_console:
-            print(f"[⚠️] - " + warning_console)
-
-    for i in range(len(races_files)):
-        championship, year = races_files[i]
-        print(f"[{i+1}/{len(races_files)}] Testing: Championship={championship}, Year={year}")
+    # Add driver URLs
+    for driver in drivers:
+        url = f"{URL}/driver.html?id={driver}"
+        all_urls.append((url, "driver", driver))
+    
+    # Add team URLs
+    for team in teams:
+        url = f"{URL}/team.html?id={team}"
+        all_urls.append((url, "team", team))
+    
+    # Add race URLs
+    for championship, year in races_files:
         url = f"{URL}/race.html?id={championship}&year={year}"
-        errors_console, warnings_console = check_console_errors(url)
+        all_urls.append((url, "race", f"{championship}/{year}"))
+    
+    print(f"Testing {len(all_urls)} pages in parallel...")
+    print(f"  - {total_drivers} drivers")
+    print(f"  - {total_teams} teams")
+    print(f"  - {total_races} races")
+    
+    # Process all URLs in parallel
+    results = check_console_errors_batch(all_urls)
+    
+    # Collect errors
+    for url, page_type, identifier, errors_console, warnings_console in results:
         for error_console in errors_console:
-            errors.append(f"[CHECK-ERRORS-MOTORSPORTDB - BROKEN LINK] - ({races_files[i]}) errors in {url} = {error_console}")
+            errors.append(f"[CHECK-ERRORS-MOTORSPORTDB - BROKEN LINK] - ({identifier}) errors in {url} = {error_console}")
         for warning_console in warnings_console:
             print(f"[⚠️] - " + warning_console)
 

@@ -18,15 +18,31 @@ The multi tests provide an extensive validation of the application by checking a
 - **Date Validation**: Ensures that all dates are correct (`verify-date-motorsportdb`).
 - **JSON Structure**: Validates the structure of JSON files (`verify-key-motorsportdb`).
 
-### 3. Single Tests
-The single tests are planned but not yet implemented. These tests will focus on individual components or features of the application.
+### 3. Validation Warnings
+- **Photos & Countries** : Script that lists missing photos and countries as warnings (non-blocking).
+
+## 🏃 Quick Start
+
+### Run Individual Tests
+```bash
+# Multi tests (all pages)
+cd tests/multi/check-errors-motorsportdb && python3 test.py
+cd tests/multi/link-motorsportdb && python3 test.py
+cd tests/multi/verify-key-motorsportdb && python3 test.py
+
+# Validation warnings
+python3 tests/single/validate_photos_countries/test.py
+```
 
 ## Pre-requisites
-- Docker: Ensure you have Docker installed and running on your machine.
-- Python: The tests are written in Python, so make sure you have Python installed.
-- Selenium & WebDriver: The tests use Selenium for browser automation. You may need to install the appropriate WebDriver for your browser.
-- Requests Library: The tests use the Requests library for making HTTP requests. You can install it using pip:
-- And you may deploy this test on a Jenkins container.
+- **Docker**: Ensure you have Docker installed and running on your machine.
+- **Python 3.8+**: The tests are written in Python.
+- **Selenium & ChromeDriver**: For browser automation.
+- **Required Python packages**:
+  ```bash
+  pip install selenium beautifulsoup4 requests
+  ```
+- **Jenkins** (optional): You may deploy this test on a Jenkins container.
 
 ## How to Run the Tests
 1. Clone the repository:
@@ -41,5 +57,9 @@ The single tests are planned but not yet implemented. These tests will focus on 
 
 ## Contributing
 Contributions are welcome! Feel free to open issues or submit pull requests to improve the tests or add new ones.
+
+When adding new tests:
+1. Create a folder in `single/` or `multi/`
+2. Follow the existing test structure
 
 Happy testing!  

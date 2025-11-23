@@ -1,5 +1,6 @@
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # DRIVERS KEY
 VALID_KEYS_DRIVERS = {
@@ -84,3 +85,47 @@ def validate_teams(teams_json_path):
 
 def validate_races(races_json_path):
     return validate_json_file(races_json_path, REQUIRED_KEYS_RACES, VALID_KEYS_RACES)
+
+def validate_files_batch(files_data):
+    """Validate multiple JSON files in parallel.
+    
+    Args:
+        files_data: List of tuples (file_path, file_type) where file_type is 'driver', 'team', or 'race'
+    
+    Returns:
+        List of all errors found
+    """
+    all_errors = []
+    total = len(files_data)
+    processed = 0
+    
+    def process_file(file_tuple):
+        nonlocal processed
+        file_path, file_type = file_tuple
+        
+        if file_type == 'driver':
+            errors = validate_drivers(file_path)
+        elif file_type == 'team':
+            errors = validate_teams(file_path)
+        elif file_type == 'race':
+            errors = validate_races(file_path)
+        else:
+            errors = [f"Unknown file type: {file_type}"]
+        
+        processed += 1
+        if processed % 100 == 0:
+            print(f"Progress: {processed}/{total} files validated")
+        
+        return errors
+    
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(process_file, file_data) for file_data in files_data]
+        
+        for future in as_completed(futures):
+            try:
+                errors = future.result()
+                all_errors.extend(errors)
+            except Exception as e:
+                all_errors.append(f"Error processing file: {e}")
+    
+    return all_errors
