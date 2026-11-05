@@ -11,7 +11,8 @@ VALID_KEYS_DRIVERS = {
     "dateOfDeath",
     "country",
     "aliases",
-    "pictureCredit"
+    "pictureCredit",
+    "wikidata"
 }
 # results live in races/ only: "seasons" is no longer allowed in drivers/ and teams/
 REQUIRED_KEYS_DRIVERS = {
@@ -26,7 +27,9 @@ VALID_KEYS_TEAMS = {
     "endDate",
     "previous",
     "next",
-    "aliases"
+    "aliases",
+    "pictureCredit",
+    "wikidata"
 }
 REQUIRED_KEYS_TEAMS = {
     "name"
